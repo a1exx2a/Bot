@@ -29,7 +29,7 @@
 
 ---------------
 
-## Установка & Настрйока & Запуск
+## Установка & Настройка & Запуск
 
 #### 1. Установка
 - Установить [.NET](https://github.com/pandao/editor.md "Heading link") на свой тип ОС
@@ -37,7 +37,8 @@
 
 #### 2. Настройка
 - Создайте Telegram бота в главном боте [@BotFather](https://t.me/BotFather) и получите API токен
-- Бот работает с Yandex Translate API, для него тоже нужен API токен, подробнее можно узнать [ТУТ](https://yandex.cloud/ru/docs/translate/operations/sa-api-key)
+
+- По умолчанию бот работает с Google Transalate API, но так же может работать с Yandex Translate API, для него тоже нужен API токен, подробнее можно узнать [ТУТ](https://yandex.cloud/ru/docs/translate/operations/sa-api-key)
 
 - Все полученные токены скопируйте в файл config.cs и не кому не показывайте
 

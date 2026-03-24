@@ -8,10 +8,10 @@ using System.Text.Json;
 class TranslationGo_input
 {
 
-    public static async Task<string> TranslateText(string sourceLang, string targetLang,string text)
+    public static async Task<string> TranslateText(string targetLang,string text)
     {
         HttpClient httpClient = new HttpClient();
-        var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLang}&tl={targetLang}&dt=t&q={Uri.EscapeDataString(text)}";
+        var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={targetLang}&dt=t&q={Uri.EscapeDataString(text)}";
         var response = await httpClient.GetStringAsync(url);
 
         var result = JsonSerializer.Deserialize<List<object>>(response);

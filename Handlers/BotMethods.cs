@@ -35,15 +35,8 @@ internal class BotMethods{
             await client.SendTextMessageAsync(update.Message?.Chat.Id, "✨ <b>Доступные команды</b>:\n\n🔄 /start - <b>перезапустить бота</b>\n\n📖 /help - <b>узнать навыки бота</b>\n\n💬 /translation - <b>перевести текст</b>\n\n🗣️ /author - <b>информация об авторе</b>", replyMarkup: start_replyKeyboard, parseMode: ParseMode.Html);
         }
         
-        
-        else if (update.Message?.Text == "/translation" || update.Message?.Text == "💬 Перевести 💬")
-        {
-            await client.SendTextMessageAsync(update.Message?.Chat.Id, "✍️ Введите текст, который хотите перевести\n\n👉 Пример: /translation (тут ваш текст)\n\n\n⚡ Для удобства:\n\nзажмите команду /translation и она у вас скопируется!");
 
-        }
-
-
-        else if (update.Message.Text.StartsWith("💬 Перевести 💬") & currentState == "Start" || currentState == "FromLanguage" || currentState == "IntoLanguage")
+        else if ((update.Message.Text == "💬 Перевести 💬"|| update.Message.Text == "/translation") & currentState == "Start" || currentState == "InputText" || currentState == "FromLanguage" || currentState == "IntoLanguage")
         {
             await FSM_btn(client, update, cancellationToken);
         }
@@ -58,16 +51,13 @@ internal class BotMethods{
                     InlineKeyboardButton.WithUrl("Перейти на гитхаб автора", "https://github.com/a1exx2a")
                 }
             });
-            await client.SendTextMessageAsync(update.Message.Chat.Id, $"<b>👨‍💻 Информация об авторе:</b>\n\n<b>Имя</b>: Александр\n\n<b>Возраст</b>: 15 лет\n\nЗнаком с такими языками программирования, как Python и C#\n\n<b>Контакт</b>: <tg-spoiler><a href='tg://user?id={5830296756}'>Менчик ('''');</a></tg-spoiler>", parseMode: ParseMode.Html, replyMarkup: keyboard);
+            await client.SendTextMessageAsync(update.Message.Chat.Id, $"<b>👨‍💻 Информация об авторе:</b>\n\n<b>Имя</b>: Александр\n\n<b>Возраст</b>: 16 лет\n\nЗнаком с такими языками программирования, как Python и C#\n\n<b>Контакт</b>: <tg-spoiler><a href='tg://user?id={5830296756}'>Менчик ('''');</a></tg-spoiler>", parseMode: ParseMode.Html, replyMarkup: keyboard);
 
         }
         else
         {
             await client.SendTextMessageAsync(update.Message?.Chat.Id, "Увы, я вас не понимаю.\nОбратитесь к команде /help");
         }
-                    
-        
-
     }
 
 
@@ -88,11 +78,27 @@ internal class BotMethods{
         switch (currentState)
         {
             case "Start":
-                input = update.Message.Text;
-                await client.SendTextMessageAsync(update.Message?.Chat.Id, "Выберите язык <b>с которого</b> переводим: \n\n✨ Если вы введёте не тот язык на котором написан текст, то он у вас не переведётся!", replyMarkup: с_replyKeyboard, parseMode: ParseMode.Html);
+                await client.SendTextMessageAsync(update.Message?.Chat.Id, "✍️ Введите текст, который хотите перевести: ");
 
-                currentState = "FromLanguage";
+                currentState = "InputText";
                 break;
+            
+            case "InputText":
+                input = update.Message.Text;
+
+                if(Config.apiKey != "Тут твой токен от yandex api если его используешь"){
+                    
+                    await client.SendTextMessageAsync(update.Message?.Chat.Id, "Выберите язык <b>с которого</b> переводим: \n\n✨ Если вы введёте не тот язык на котором написан текст, то он у вас не переведётся!", replyMarkup: с_replyKeyboard, parseMode: ParseMode.Html);
+                    currentState = "FromLanguage";
+
+                }
+                else
+                {
+                    await client.SendTextMessageAsync(update.Message.Chat.Id, "Выберите язык <b>на который</b> переводим: \n\n✨ Если вы введёте не правильный язык, то бот возьмёт предыдущий вариант языка для перевода!",replyMarkup: na_replyKeyboard, parseMode: ParseMode.Html);
+                    currentState = "IntoLanguage";
+                }
+                break;
+                
 
             case "FromLanguage":
 
@@ -126,13 +132,9 @@ internal class BotMethods{
                 else
                 {
                     await client.SendTextMessageAsync(update.Message.Chat.Id, "Ой! Вы что-то не то нажали.");
-
-
                 }
               
                 break;
-
-            
 
             case "IntoLanguage":
                   
@@ -160,11 +162,8 @@ internal class BotMethods{
 
 
                     
-                    if(string.IsNullOrEmpty(from_language) || string.IsNullOrEmpty(into_language)){
-                        if (string.IsNullOrEmpty(from_language)){
-                        }
-                        else if (string.IsNullOrEmpty(into_language)){
-                        }
+                    if(string.IsNullOrEmpty(into_language)){
+
                         await client.SendTextMessageAsync(update.Message.Chat.Id, $"Попробуй снова.",replyMarkup: start_replyKeyboard);
                         currentState = "Start"; 
                         break;
@@ -175,12 +174,12 @@ internal class BotMethods{
                         Console.WriteLine($"\nТекст который переводим {input}\nЯзык с которого переводим {from_language}\nЯзык на который переводим {into_language}");
 
                         if(Config.apiKey != "Тут твой токен от yandex api если его используешь"){
-                            string translatedText = await TranslationYa_input.TranslateText(input.Substring(12), from_language, into_language); 
+                            string translatedText = await TranslationYa_input.TranslateText(input, from_language, into_language); 
                             await client.SendTextMessageAsync(update.Message.Chat.Id,$"🗣️ Переведенный текст с помощью <b>Yandex Translate</b>: {translatedText}", replyMarkup: start_replyKeyboard, parseMode: ParseMode.Html);
                         }
 
                         else{
-                            string translatedText = await TranslationGo_input.TranslateText(from_language, into_language, input); 
+                            string translatedText = await TranslationGo_input.TranslateText(into_language, input); 
                             await client.SendTextMessageAsync(update.Message.Chat.Id,$"🗣️ Переведенный текст с помощью <b>Google Translate</b>: {translatedText}", replyMarkup: start_replyKeyboard, parseMode: ParseMode.Html);
                         }
                     }
